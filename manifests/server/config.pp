@@ -64,7 +64,8 @@
 #       'client' => {
 #         'port' => 3300
 #       }
-#     }
+#     },
+#     include_files = ['/etc/mysql/conf.d/special.cnf']
 #   }
 #
 #   This will create the file /etc/mysql/conf.d/basic_config.cnf with
@@ -81,8 +82,11 @@
 #   [client]
 #   port = 3300
 #
+#   !include /etc/mysql/conf.d/special.cnf
+#
 define mysql::server::config (
   $settings,
+  $include_files  = [],
   $notify_service = true
 ) {
   include mysql::config
