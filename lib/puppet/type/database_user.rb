@@ -22,4 +22,9 @@ Puppet::Type.newtype(:database_user) do
     newvalue(/\w+/)
   end
 
+  newproperty(:defaults_file) do
+    desc "Defaults file to use for connection to the database"
+    defaultto '/root/.my.cnf'
+  end
+
 end
