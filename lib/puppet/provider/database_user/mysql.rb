@@ -1,3 +1,5 @@
+require 'digest/sha1'
+
 Puppet::Type.type(:database_user).provide(:mysql) do
 
   desc "manage users for a mysql database."
@@ -15,7 +17,14 @@ Puppet::Type.type(:database_user).provide(:mysql) do
   end
 
   def create
-    mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-e", "create user '%s' identified by PASSWORD '%s'" % [ @resource[:name].sub("@", "'@'"), @resource.value(:password_hash) ])
+    if @resource[:password_hash]
+      pass = @resource.value(:password_hash)
+    elsif @resource[:password]
+      pass = '*' + Digest::SHA1.hexdigest(Digest::SHA1.digest(@resource.value(:password))).upcase
+    else
+      pass = ""
+    end
+    mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-e", "create user '%s' identified by PASSWORD '%s'" % [ @resource[:name].sub("@", "'@'"), pass ])
   end
 
   def destroy
@@ -23,12 +32,17 @@ Puppet::Type.type(:database_user).provide(:mysql) do
   end
 
   def password
-    @resource.value(:password)
+    pass = '*' + Digest::SHA1.hexdigest(Digest::SHA1.digest(@resource.value(:password))).upcase
+    if pass == self.password_hash
+      @resource.value(:password)
+    else
+      pass
+    end
   end
 
   def password=(string)
-    phash = mysql_password(string)
-    self.password_hash = phash
+    pass = '*' + Digest::SHA1.hexdigest(Digest::SHA1.digest(@resource.value(:password))).upcase
+    mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-e", "SET PASSWORD FOR '%s' = '%s'" % [ @resource[:name].sub("@", "'@'"), pass ] )
   end
 
   def password_hash
