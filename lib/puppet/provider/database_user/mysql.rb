@@ -22,6 +22,15 @@ Puppet::Type.type(:database_user).provide(:mysql) do
     mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-e", "drop user '%s'" % @resource.value(:name).sub("@", "'@'") )
   end
 
+  def password
+    @resource.value(:password)
+  end
+
+  def password=(string)
+    phash = mysql_password(string)
+    self.password_hash = phash
+  end
+
   def password_hash
     mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-NBe", "select password from mysql.user where CONCAT(user, '@', host) = '%s'" % @resource.value(:name)).chomp
   end
