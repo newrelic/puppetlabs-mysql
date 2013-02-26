@@ -132,7 +132,7 @@ class mysql::config(
   }
 
   # Set $config_file = '' to not enforce it
-  if $config_file
+  if $config_file {
     file { $config_file:
       content => template('mysql/my.cnf.erb'),
       mode    => '0644',
