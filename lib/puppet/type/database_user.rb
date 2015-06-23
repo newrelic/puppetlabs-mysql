@@ -32,4 +32,8 @@ Puppet::Type.newtype(:database_user) do
     defaultto '/root/.my.cnf'
   end
 
+  newproperty(:max_user_connections) do
+    desc "Set the number of connections max for a user"
+    defaultto 0
+  end
 end
