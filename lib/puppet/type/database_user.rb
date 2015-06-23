@@ -32,4 +32,23 @@ Puppet::Type.newtype(:database_user) do
     defaultto '/root/.my.cnf'
   end
 
+  newproperty(:max_user_connections) do
+    desc "Set the number of connections max for a user"
+    defaultto 0
+  end
+
+  newproperty(:max_queries_per_hour) do
+    desc "Set the number of maximum queries per hour for a user"
+    defaultto 0
+  end
+
+  newproperty(:max_updates_per_hour) do
+    desc "Set the number of maximum updates per hour for a user"
+    defaultto 0
+  end
+
+  newproperty(:max_connections_per_hour) do
+    desc "Set the number of maximum connections per hour for a user"
+    defaultto 0
+  end
 end
