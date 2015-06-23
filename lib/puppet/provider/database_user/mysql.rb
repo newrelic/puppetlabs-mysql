@@ -61,6 +61,30 @@ Puppet::Type.type(:database_user).provide(:mysql) do
     mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-e", "update mysql.user set max_user_connections = %d where CONCAT(user, '@', host) = '%s'" % [max, @resource[:name]])
   end
 
+  def max_queries_per_hour
+    mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-NBe", "select max_questions from mysql.user where CONCAT(user, '@', host) = '%s'" % @resource[:name]).chomp
+  end
+
+  def max_queries_per_hour=(max)
+    mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-e", "update mysql.user set max_questions = %d where CONCAT(user, '@', host) = '%s'" % [max, @resource[:name]])
+  end
+
+  def max_updates_per_hour
+    mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-NBe", "select max_updates from mysql.user where CONCAT(user, '@', host) = '%s'" % @resource[:name]).chomp
+  end
+
+  def max_updates_per_hour=(max)
+    mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-e", "update mysql.user set max_updates = %d where CONCAT(user, '@', host) = '%s'" % [max, @resource[:name]])
+  end
+
+  def max_connections_per_hour
+    mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-NBe", "select max_connections from mysql.user where CONCAT(user, '@', host) = '%s'" % @resource[:name]).chomp
+  end
+
+  def max_connections_per_hour=(max)
+    mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-e", "update mysql.user set max_connections = %d where CONCAT(user, '@', host) = '%s'" % [max, @resource[:name]])
+  end
+
   def exists?
     not mysql("--defaults-file=%s" % @resource.value(:defaults_file), "mysql", "-NBe", "select '1' from mysql.user where CONCAT(user, '@', host) = '%s'" % @resource.value(:name)).empty?
   end
